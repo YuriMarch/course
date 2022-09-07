@@ -4,6 +4,9 @@ import com.distancelearning.course.models.LessonModel;
 import com.distancelearning.course.repositories.LessonRepository;
 import com.distancelearning.course.services.LessonService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,5 +37,10 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public List<LessonModel> findAllByModule(UUID moduleId) {
         return lessonRepository.findAllLessonsIntoModule(moduleId);
+    }
+
+    @Override
+    public Page<LessonModel> findAllByModule(Specification<LessonModel> spec, Pageable pageable) {
+        return lessonRepository.findAll(spec, pageable);
     }
 }

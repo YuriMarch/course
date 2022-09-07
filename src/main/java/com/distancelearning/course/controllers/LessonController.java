@@ -3,11 +3,15 @@ package com.distancelearning.course.controllers;
 import com.distancelearning.course.dtos.LessonDto;
 import com.distancelearning.course.models.LessonModel;
 import com.distancelearning.course.models.ModuleModel;
-import com.distancelearning.course.services.CourseService;
 import com.distancelearning.course.services.LessonService;
 import com.distancelearning.course.services.ModuleService;
+import com.distancelearning.course.specifications.SpecificationTemplate;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/modules/{moduleId}/lessons")
@@ -72,8 +78,17 @@ public class LessonController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LessonModel>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId){
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.findAllByModule(moduleId));
+    public ResponseEntity<Page<LessonModel>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId,
+                                                           SpecificationTemplate.LessonSpec spec,
+                                                           @PageableDefault(size = 5, sort = "lessonId",
+                                                                   direction = Sort.Direction.ASC) Pageable pageable){
+        Page<LessonModel> lessonPage = lessonService.findAllByModule(SpecificationTemplate.lessonModuleId(moduleId).and(spec), pageable);
+        if (!lessonPage.isEmpty()){
+            for (LessonModel lessonModel: lessonPage.toList()){
+                lessonModel.add(linkTo(methodOn(LessonController.class).getLessonById(moduleId, lessonModel.getLessonId())).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(lessonPage);
     }
 
     @GetMapping("/{lessonId}")

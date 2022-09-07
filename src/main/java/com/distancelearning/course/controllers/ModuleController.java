@@ -5,8 +5,13 @@ import com.distancelearning.course.models.CourseModel;
 import com.distancelearning.course.models.ModuleModel;
 import com.distancelearning.course.services.CourseService;
 import com.distancelearning.course.services.ModuleService;
+import com.distancelearning.course.specifications.SpecificationTemplate;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/courses/{courseId}/modules")
@@ -70,8 +77,17 @@ public class ModuleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ModuleModel>> getAllModules(@PathVariable(value = "courseId") UUID courseId){
-        return ResponseEntity.status(HttpStatus.OK).body(moduleService.findAllByCourse(courseId));
+    public ResponseEntity<Page<ModuleModel>> getAllModules(@PathVariable(value = "courseId") UUID courseId,
+                                                           SpecificationTemplate.ModuleSpec spec,
+                                                           @PageableDefault(size = 5, sort = "moduleId",
+                                                                   direction = Sort.Direction.ASC) Pageable pageable){
+        Page<ModuleModel> modulePage = moduleService.findAllByCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable);
+        if (!modulePage.isEmpty()){
+            for (ModuleModel moduleModel: modulePage.toList()){
+                moduleModel.add(linkTo(methodOn(ModuleController.class).getModuleById(courseId, moduleModel.getModuleId())).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(modulePage);
     }
 
     @GetMapping("/{moduleId}")

@@ -8,6 +8,9 @@ import com.distancelearning.course.repositories.LessonRepository;
 import com.distancelearning.course.repositories.ModuleRepository;
 import com.distancelearning.course.services.CourseService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -52,5 +55,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseModel> findAll() {
         return courseRepository.findAll();
+    }
+
+    @Override
+    public Page<CourseModel> findAll(Specification<CourseModel> spec, Pageable pageable) {
+        return courseRepository.findAll(spec, pageable);
     }
 }
