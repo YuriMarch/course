@@ -1,6 +1,7 @@
 package com.distancelearning.course.specifications;
 
 import com.distancelearning.course.models.CourseModel;
+import com.distancelearning.course.models.CourseUserModel;
 import com.distancelearning.course.models.LessonModel;
 import com.distancelearning.course.models.ModuleModel;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -10,6 +11,7 @@ import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
 import java.util.UUID;
@@ -46,6 +48,15 @@ public class SpecificationTemplate {
             Root<ModuleModel> module = query.from(ModuleModel.class);
             Expression<Collection<LessonModel>> moduleLessons = module.get("lessons");
             return cb.and(cb.equal(module.get("moduleId"), moduleId), cb.isMember(lesson, moduleLessons));
+        };
+    }
+
+    //Query to connect CourseModel and CourseUserModel
+    public static Specification<CourseModel> courseUserId (final UUID userId){
+        return (root, query, cb) -> {
+            query.distinct(true);
+            Join<CourseModel, CourseUserModel> courseProd = root.join("coursesUsers");
+            return cb.equal(courseProd.get("userId"), userId);
         };
     }
 }
