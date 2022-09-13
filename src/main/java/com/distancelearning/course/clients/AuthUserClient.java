@@ -20,14 +20,17 @@ import java.util.UUID;
 @Component
 @AllArgsConstructor
 @Log4j2
-public class CourseClient {
+public class AuthUserClient {
+
+//    @Value("${distancelearning.api.url.authuser}")
+//    String REQUEST_URI;
     private final RestTemplate restTemplate;
 
     private final UtilsService utilsService;
 
     public Page<UserDto> getAllUsersInCourse(UUID courseId, Pageable pageable) {
         List<UserDto> searchResult = null;
-        String url = utilsService.createUrl(courseId, pageable);
+        String url = utilsService.createUrlGetAllUsersInCourse(courseId, pageable);
 
         log.debug("Request URL: {}", url);
         log.info("Request URL: {}", url);
@@ -45,5 +48,10 @@ public class CourseClient {
         }
         log.info("Ending request /users courseId {}", courseId);
         return result.getBody();
+    }
+
+    public ResponseEntity<UserDto> getOneUserById(UUID userId){
+        String url = utilsService.createUrlGetOneUserById(userId);
+        return restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
     }
 }
