@@ -29,7 +29,7 @@ public class CourseUserServiceImpl implements CourseUserService {
         return courseUserRepository.save(courseUserModel);
     }
 
-    @Transactional //guarantees that the operations are successful. If an error occurs, it will cancel the operation to avoid data mismatch.
+    @Transactional //guarantees that the operations are successful. If an error occurs, it will cancel the operation to avoid data mismatch
     @Override
     public CourseUserModel saveAndSendSubscriptionUserInCourse(CourseUserModel courseUserModel) {
         courseUserModel = courseUserRepository.save(courseUserModel);
