@@ -1,9 +1,11 @@
 package com.distancelearning.course.services.impl;
 
 import com.distancelearning.course.models.CourseModel;
+import com.distancelearning.course.models.CourseUserModel;
 import com.distancelearning.course.models.LessonModel;
 import com.distancelearning.course.models.ModuleModel;
 import com.distancelearning.course.repositories.CourseRepository;
+import com.distancelearning.course.repositories.CourseUserRepository;
 import com.distancelearning.course.repositories.LessonRepository;
 import com.distancelearning.course.repositories.ModuleRepository;
 import com.distancelearning.course.services.CourseService;
@@ -26,6 +28,8 @@ public class CourseServiceImpl implements CourseService {
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
 
+    private final CourseUserRepository courseUserRepository;
+
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
@@ -38,6 +42,10 @@ public class CourseServiceImpl implements CourseService {
                 }
             }
             moduleRepository.deleteAll(moduleModelList);
+        }
+        List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
+        if (!courseUserModelList.isEmpty()){
+            courseUserRepository.deleteAll(courseUserModelList);
         }
         courseRepository.delete(courseModel);
     }
