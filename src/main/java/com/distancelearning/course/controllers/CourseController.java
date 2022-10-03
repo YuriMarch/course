@@ -4,6 +4,7 @@ import com.distancelearning.course.dtos.CourseDto;
 import com.distancelearning.course.models.CourseModel;
 import com.distancelearning.course.services.CourseService;
 import com.distancelearning.course.specifications.SpecificationTemplate;
+import com.distancelearning.course.validation.CourseValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,8 +33,15 @@ public class CourseController {
 
     private final CourseService courseService;
 
+    private final CourseValidator courseValidator;
+
     @PostMapping
-    public ResponseEntity<Object> saveCourse(@RequestBody @Valid CourseDto courseDto){
+    public ResponseEntity<Object> saveCourse(@RequestBody CourseDto courseDto, Errors errors){
+        courseValidator.validate(courseDto, errors);
+        if (errors.hasErrors()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
+        }
+
         var courseModel = new CourseModel();
         BeanUtils.copyProperties(courseDto, courseModel);
         courseModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
