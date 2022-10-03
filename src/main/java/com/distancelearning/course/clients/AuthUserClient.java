@@ -1,10 +1,12 @@
 package com.distancelearning.course.clients;
 
+import com.distancelearning.course.dtos.CourseUserDto;
 import com.distancelearning.course.dtos.ResponsePageDto;
 import com.distancelearning.course.dtos.UserDto;
 import com.distancelearning.course.services.UtilsService;
-import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,15 +20,16 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-@AllArgsConstructor
 @Log4j2
 public class AuthUserClient {
 
-//    @Value("${distancelearning.api.url.authuser}")
-//    String REQUEST_URI;
-    private final RestTemplate restTemplate;
+    @Value("${distancelearning.api.url.authuser}")
+    String REQUEST_URI_AUTHUSER;
+    @Autowired
+    RestTemplate restTemplate;
 
-    private final UtilsService utilsService;
+    @Autowired
+    UtilsService utilsService;
 
     public Page<UserDto> getAllUsersInCourse(UUID courseId, Pageable pageable) {
         List<UserDto> searchResult = null;
@@ -53,5 +56,13 @@ public class AuthUserClient {
     public ResponseEntity<UserDto> getOneUserById(UUID userId){
         String url = utilsService.createUrlGetOneUserById(userId);
         return restTemplate.exchange(url, HttpMethod.GET, null, UserDto.class);
+    }
+
+    public void postSubscriptionUserInCourse(UUID courseId, UUID userId) {
+        String url = REQUEST_URI_AUTHUSER + "/users/" + userId + "/courses/subscription";
+        var courseUserDto = new CourseUserDto();
+        courseUserDto.setUserId(userId);
+        courseUserDto.setCourseId(courseId);
+        restTemplate.postForObject(url, courseUserDto, String.class);
     }
 }
