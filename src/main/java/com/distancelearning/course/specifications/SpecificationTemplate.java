@@ -34,10 +34,10 @@ public class SpecificationTemplate {
     public static Specification<ModuleModel> moduleCourseId(final UUID courseId){
         return (root, query, cb) -> {
             query.distinct(true);
-            Root<ModuleModel> module = root;
-            Root<CourseModel> course = query.from(CourseModel.class);
-            Expression<Collection<ModuleModel>> courseModules = course.get("modules");
-            return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(module, courseModules));
+            Root<ModuleModel> module = root; //Entity A
+            Root<CourseModel> course = query.from(CourseModel.class); //Entity B
+            Expression<Collection<ModuleModel>> courseModules = course.get("modules"); //collection from Entity A in Entity B
+            return cb.and(cb.equal(course.get("courseId"), courseId), cb.isMember(module, courseModules)); //Criteria Builder using AND
         };
     }
 

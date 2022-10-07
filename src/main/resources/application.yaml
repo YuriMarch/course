@@ -2,6 +2,8 @@ server:
   port: 8081
 
 spring:
+  application:
+    name: distancelearning-course-service
   datasource:
     url: jdbc:postgresql://localhost:5432/distancelearning-course
     username: postgres
@@ -24,4 +26,11 @@ logging:
 distancelearning:
   api:
     url:
-      authuser: 'http://localhost:8080'
+      authuser: 'http://distancelearning-authuser-service'
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost

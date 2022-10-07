@@ -6,8 +6,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.springframework.hateoas.RepresentationModel;
@@ -18,7 +19,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -61,7 +63,7 @@ public class CourseModel extends RepresentationModel<CourseModel> implements Ser
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
-    @Fetch(FetchMode.SUBSELECT)
+    @Fetch(FetchMode.SUBSELECT) //Select = 1 Query for Course + n Queries for n Modules | Join = 1 Query (Ignores FetchType.LAZY) | Subselect = 1 Query for Course + 1 Query for all Modules
     private Set<ModuleModel> modules;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
