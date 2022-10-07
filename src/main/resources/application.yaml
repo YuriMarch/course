@@ -28,7 +28,7 @@ logging:
 distancelearning:
   api:
     url:
-      authuser: 'http://distancelearning-authuser-service'
+      authuser: 'http://distancelearning-authuser-service/distancelearning-authuser'
 
 eureka:
   client:
