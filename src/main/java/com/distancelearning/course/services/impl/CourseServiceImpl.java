@@ -1,5 +1,6 @@
 package com.distancelearning.course.services.impl;
 
+import com.distancelearning.course.clients.AuthUserClient;
 import com.distancelearning.course.models.CourseModel;
 import com.distancelearning.course.models.CourseUserModel;
 import com.distancelearning.course.models.LessonModel;
@@ -30,9 +31,12 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseUserRepository courseUserRepository;
 
+    private final AuthUserClient authUserClient;
+
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
+        boolean deleteCourseUserInAuthUser = false;
         List<ModuleModel> moduleModelList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         if (!moduleModelList.isEmpty()){
             for (ModuleModel module : moduleModelList){
@@ -46,8 +50,12 @@ public class CourseServiceImpl implements CourseService {
         List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
         if (!courseUserModelList.isEmpty()){
             courseUserRepository.deleteAll(courseUserModelList);
+            deleteCourseUserInAuthUser = true;
         }
         courseRepository.delete(courseModel);
+        if (deleteCourseUserInAuthUser){
+            authUserClient.deleteCourseInAuthUser(courseModel.getCourseId());
+        }
     }
 
     @Override

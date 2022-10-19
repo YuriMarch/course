@@ -1,5 +1,6 @@
 package com.distancelearning.course.clients;
 
+import com.distancelearning.course.dtos.CourseDto;
 import com.distancelearning.course.dtos.CourseUserDto;
 import com.distancelearning.course.dtos.ResponsePageDto;
 import com.distancelearning.course.dtos.UserDto;
@@ -64,5 +65,10 @@ public class AuthUserClient {
         courseUserDto.setUserId(userId);
         courseUserDto.setCourseId(courseId);
         restTemplate.postForObject(url, courseUserDto, String.class);
+    }
+
+    public void deleteCourseInAuthUser(UUID courseId) {
+        String url = REQUEST_URI_AUTHUSER + "/users/courses/" + courseId;
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
     }
 }
