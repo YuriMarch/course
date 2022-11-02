@@ -46,7 +46,8 @@ public class CourseController {
         BeanUtils.copyProperties(courseDto, courseModel);
         courseModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseModel));
+        courseService.save(courseModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseModel);
     }
 
     @DeleteMapping("/{courseId}")
@@ -54,10 +55,9 @@ public class CourseController {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
         if(courseModelOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
-        } else {
-            courseService.delete(courseModelOptional.get());
-            return ResponseEntity.status(HttpStatus.OK).body("Course successfully deleted.");
         }
+        courseService.delete(courseModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Course successfully deleted.");
     }
 
     @PutMapping("/{courseId}")
@@ -66,16 +66,17 @@ public class CourseController {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
         if(courseModelOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
-        } else {
-            var courseModel = courseModelOptional.get();
-            courseModel.setName(courseDto.getName());
-            courseModel.setDescription(courseDto.getDescription());
-            courseModel.setImageUrl(courseDto.getImageUrl());
-            courseModel.setCourseStatus(courseDto.getCourseStatus());
-            courseModel.setCourseLevel(courseDto.getCourseLevel());
-            courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-            return ResponseEntity.status(HttpStatus.OK).body(courseService.save(courseModel));
         }
+        var courseModel = courseModelOptional.get();
+        courseModel.setName(courseDto.getName());
+        courseModel.setDescription(courseDto.getDescription());
+        courseModel.setImageUrl(courseDto.getImageUrl());
+        courseModel.setCourseStatus(courseDto.getCourseStatus());
+        courseModel.setCourseLevel(courseDto.getCourseLevel());
+        courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        courseService.save(courseModel);
+        return ResponseEntity.status(HttpStatus.OK).body(courseModel);
+
     }
 
     @GetMapping
