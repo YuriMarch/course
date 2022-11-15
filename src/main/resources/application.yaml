@@ -7,7 +7,7 @@ spring:
   application:
     name: distancelearning-course-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/distancelearning-course
+    url: jdbc:postgresql://localhost:5432/distancelearning-course-v2
     username: postgres
     password: postgres
   jpa:
@@ -20,6 +20,8 @@ spring:
   output:
     ansi:
       enabled: Always
+  rabbitmq:
+    addresses: amqps://edchwiwa:PQjjRhmkiBn8wl0J6RFU-z7y7L7Xxs1B@sparrow.rmq.cloudamqp.com/edchwiwa
 
 logging:
   level:

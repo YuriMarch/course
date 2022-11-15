@@ -1,17 +1,11 @@
 package com.distancelearning.course.validation;
 
-import com.distancelearning.course.clients.AuthUserClient;
 import com.distancelearning.course.dtos.CourseDto;
-import com.distancelearning.course.dtos.UserDto;
-import com.distancelearning.course.enums.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.UUID;
 
@@ -21,9 +15,6 @@ public class CourseValidator implements Validator {
     @Autowired
     @Qualifier("defaultValidator")
     private Validator validator;
-
-    @Autowired
-    AuthUserClient authUserClient;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -40,20 +31,20 @@ public class CourseValidator implements Validator {
     }
 
     private void validateUserInstructor(UUID userInstructor, Errors errors){
-        ResponseEntity<UserDto> responseUserInstructor;
-        try {
-            responseUserInstructor = authUserClient.getOneUserById(userInstructor);
-            if (responseUserInstructor.getBody().getUserType().equals(UserType.STUDENT)){
-                errors.rejectValue("userInstructor",
-                        "userInstructorError",
-                        "User must be INSTRUCTOR or ADMIN to create a course");
-            }
-        } catch (HttpStatusCodeException e){
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
-                errors.rejectValue("userInstructor",
-                        "userInstructorError",
-                        "Instructor not found");
-            }
-        }
+//        ResponseEntity<UserDto> responseUserInstructor;
+//        try {
+//            responseUserInstructor = authUserClient.getOneUserById(userInstructor);
+//            if (responseUserInstructor.getBody().getUserType().equals(UserType.STUDENT)){
+//                errors.rejectValue("userInstructor",
+//                        "userInstructorError",
+//                        "User must be INSTRUCTOR or ADMIN to create a course");
+//            }
+//        } catch (HttpStatusCodeException e){
+//            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+//                errors.rejectValue("userInstructor",
+//                        "userInstructorError",
+//                        "Instructor not found");
+//            }
+//        }
     }
 }

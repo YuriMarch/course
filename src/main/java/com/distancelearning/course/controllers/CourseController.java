@@ -84,20 +84,12 @@ public class CourseController {
                                                            @PageableDefault (size = 5, sort = "courseId",
                                                             direction = Sort.Direction.ASC) Pageable pageable,
                                                            @RequestParam(required = false) UUID userId){
-        Page<CourseModel> coursePage = null;
         if (userId != null){
-            coursePage = courseService.findAll(SpecificationTemplate.courseUserId(userId).and(spec), pageable);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(courseService.findAll(SpecificationTemplate.courseUserId(userId).and(spec), pageable));
         } else {
-            coursePage = courseService.findAll(spec, pageable);
+            return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(spec, pageable));
         }
-
-        //Hateoas implementation
-        if (!coursePage.isEmpty()){
-            for (CourseModel courseModel: coursePage.toList()){
-                courseModel.add(linkTo(methodOn(CourseController.class).getCourseById(courseModel.getCourseId())).withSelfRel());
-            }
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(coursePage);
     }
 
     @GetMapping("/{courseId}")
