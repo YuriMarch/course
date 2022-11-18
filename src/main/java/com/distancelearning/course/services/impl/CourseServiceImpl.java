@@ -27,8 +27,6 @@ public class CourseServiceImpl implements CourseService {
     private final ModuleRepository moduleRepository;
     private final LessonRepository lessonRepository;
 
-    private final UserRepository courseUserRepository;
-
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
